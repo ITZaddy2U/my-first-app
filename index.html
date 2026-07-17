@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word of the Day - Version 3</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-gradient-1: #dbeafe;
+      --bg-gradient-2: #eff6ff;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #e2e8f0;
+      --secondary-hover: #cbd5e1;
+      --accent: #dbeafe;
+      --border: #cbd5e1;
+      --danger: #dc2626;
+      --danger-hover: #b91c1c;
+      --success: #059669;
+      --shadow: rgba(15, 23, 42, 0.12);
+    }
+
+    body.dark {
+      --bg: #020617;
+      --bg-gradient-1: #0f172a;
+      --bg-gradient-2: #1e293b;
+      --card: #111827;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --secondary: #334155;
+      --secondary-hover: #475569;
+      --accent: #1d4ed8;
+      --border: #475569;
+      --danger: #ef4444;
+      --danger-hover: #f87171;
+      --success: #10b981;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg), var(--bg-gradient-1), var(--bg-gradient-2));
+      color: var(--text);
+      min-height: 100%;
+    }
+
+    body {
+      padding: 24px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .app {
+      background: var(--card);
+      border-radius: 22px;
+      box-shadow: 0 12px 32px var(--shadow);
+      padding: 28px;
+      border: 1px solid var(--border);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .date {
+      margin: 16px 0 22px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      min-width: 220px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--muted);
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    body.dark .card {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .label {
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 10px;
+    }
+
+    .word-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .word {
+      margin: 0;
+      font-size: 2.2rem;
+      line-height: 1.2;
+    }
+
+    .phonetic {
+      margin-top: 10px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-size: 0.92rem;
+    }
+
+    body:not(.dark) .badge {
+      color: #1e3a8a;
+    }
+
+    .section {
+      margin-top: 22px;
+    }
+
+    .section h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .section p {
+      margin: 0;
+      line-height: 1.65;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 0.98rem;
+      transition: transform 0.15s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .secondary {
+      background: var(--secondary);
+      color: var(--text);
+    }
+
+    .secondary:hover {
+      background: var(--secondary-hover);
+    }
+
+    .danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .status {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      min-height: 22px;
+    }
+
+    .favorites {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    .favorites-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .favorites-header h3 {
+      margin: 0;
+    }
+
+    .favorite-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .favorite-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255,255,255,0.25);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    body.dark .favorite-card {
+      background: rgba(30, 41, 59, 0.55);
+    }
+
+    .favorite-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .favorite-word {
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .favorite-type {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .favorite-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .tiny-btn {
+      padding: 8px 10px;
+      font-size: 0.88rem;
+      border-radius: 10px;
+    }
+
+    .deploy-box {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    .deploy-box h3 {
+      margin-top: 0;
+    }
+
+    .deploy-box ol {
+      padding-left: 20px;
+      line-height: 1.7;
+    }
+
+    code.inline {
+      background: var(--secondary);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.92em;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .app {
+        padding: 18px;
+      }
+
+      .word {
+        font-size: 1.7rem;
+      }
+
+      .search-bar input,
+      .search-bar button,
+      .button-row button,
+      .top-actions button {
+        width: 100%;
+      }
+
+      .favorite-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .favorite-actions {
+        width: 100%;
+      }
+
+      .favorite-actions button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="app">
+      <div class="topbar">
+        <div class="title-wrap">
+          <h1>Word of the Day</h1>
+          <div class="subtitle">Search words, save favorites, and deploy this app easily.</div>
+        </div>
+
+        <div class="top-actions">
+          <button class="secondary" id="themeToggle">Toggle Dark Mode</button>
+        </div>
+      </div>
+
+      <div class="date" id="date"></div>
+
+      <div class="search-bar">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search any word, e.g. diligent"
+        />
+        <button class="primary" id="searchBtn">Search</button>
+      </div>
+
+      <div class="card">
+        <div class="label">Current Word</div>
+
+        <div class="word-row">
+          <h2 class="word" id="word">Loading...</h2>
+          <button class="secondary" id="audioBtn">🔊 Play Audio</button>
+        </div>
+
+        <div class="phonetic" id="phonetic">Loading pronunciation...</div>
+        <div class="badge" id="partOfSpeech">Loading...</div>
+
+        <div class="section">
+          <h3>Definition</h3>
+          <p id="definition">Loading definition...</p>
+        </div>
+
+        <div class="section">
+          <h3>Example</h3>
+          <p id="example">Loading example...</p>
+        </div>
+
+        <div class="button-row">
+          <button class="primary" id="todayBtn">Today's Word</button>
+          <button class="secondary" id="randomBtn">Random Word</button>
+          <button class="secondary" id="favoriteBtn">⭐ Save Favorite</button>
+          <button class="secondary" id="copyBtn">📋 Copy Details</button>
+        </div>
+
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="favorites">
+        <div class="favorites-header">
+          <h3>Favorites</h3>
+          <button class="danger" id="clearFavoritesBtn">Clear All Favorites</button>
+        </div>
+        <div class="favorite-list" id="favoriteList"></div>
+      </div>
+
+      <div class="deploy-box">
+        <h3>Deploy this app</h3>
+        <ol>
+          <li>Save this file as <code class="inline">index.html</code>.</li>
+          <li>Create a folder and place the file inside it.</li>
+          <li>Upload that folder to GitHub, Netlify, or Vercel.</li>
+          <li>For GitHub Pages, put <code class="inline">index.html</code> in the root of the repository.</li>
+          <li>For Netlify or Vercel, drag-and-drop the folder for instant deployment.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fallbackWords = [
+      {
+        word: "serendipity",
+        partOfSpeech: "noun",
+        definition: "The occurrence of finding something pleasant by chance.",
+        example: "Finding the perfect internship felt like serendipity.",
+        phonetic: "/ˌserənˈdipədē/",
+        audio: ""
+      },
+      {
+        word: "ephemeral",
+        partOfSpeech: "adjective",
+        definition: "Lasting for a very short time.",
+        example: "That burst of motivation was ephemeral, so she built a system instead.",
+        phonetic: "/əˈfem(ə)rəl/",
+        audio: ""
+      },
+      {
+        word: "resilient",
+        partOfSpeech: "adjective",
+        definition: "Able to recover quickly from difficulties.",
+        example: "A resilient student can reset after a bad exam.",
+        phonetic: "/rəˈzilyənt/",
+        audio: ""
+      },
+      {
+        word: "diligent",
+        partOfSpeech: "adjective",
+        definition: "Showing careful and persistent work or effort.",
+        example: "He was diligent about studying for 30 minutes every day.",
+        phonetic: "/ˈdiləjənt/",
+        audio: ""
+      },
+      {
+        word: "curiosity",
+        partOfSpeech: "noun",
+        definition: "A strong desire to know or learn something.",
+        example: "Curiosity made coding feel fun instead of intimidating.",
+        phonetic: "/ˌkyoorēˈäsədē/",
+        audio: ""
+      },
+      {
+        word: "eloquent",
+        partOfSpeech: "adjective",
+        definition: "Fluent or persuasive in speaking or writing.",
+        example: "Her eloquent speech made the idea easy to understand.",
+        phonetic: "/ˈeləkwənt/",
+        audio: ""
+      },
+      {
+        word: "meticulous",
+        partOfSpeech: "adjective",
+        definition: "Showing great attention to detail.",
+        example: "She took a meticulous approach to editing her essay.",
+        phonetic: "/məˈtikyələs/",
+        audio: ""
+      },
+      {
+        word: "insight",
+        partOfSpeech: "noun",
+        definition: "A deep and accurate understanding of something.",
+        example: "The professor's comments gave him real insight.",
+        phonetic: "/ˈinˌsīt/",
+        audio: ""
+      },
+      {
+        word: "innovate",
+        partOfSpeech: "verb",
+        definition: "To introduce new methods or ideas.",
+        example: "Teams innovate faster when they test small ideas quickly.",
+        phonetic: "/ˈinəˌvāt/",
+        audio: ""
+      },
+      {
+        word: "tranquil",
+        partOfSpeech: "adjective",
+        definition: "Free from disturbance; calm.",
+        example: "The quiet study room felt tranquil before exams started.",
+        phonetic: "/ˈtraNGkwəl/",
+        audio: ""
+      },
+      {
+        word: "ambition",
+        partOfSpeech: "noun",
+        definition: "A strong desire to achieve something.",
+        example: "Ambition helped her apply for opportunities others ignored.",
+        phonetic: "/amˈbiSH(ə)n/",
+        audio: ""
+      },
+      {
+        word: "adapt",
+        partOfSpeech: "verb",
+        definition: "To adjust to new conditions.",
+        example: "Successful students adapt when their first plan fails.",
+        phonetic: "/əˈdapt/",
+        audio: ""
+      }
+    ];
+
+    let currentWordData = null;
+
+    function setStatus(message, type = "normal") {
+      const status = document.getElementById("status");
+      status.textContent = message;
+      status.style.color = type === "success"
+        ? "var(--success)"
+        : type === "error"
+        ? "var(--danger)"
+        : "var(--muted)";
+    }
+
+    function formatDate() {
+      const today = new Date();
+      return today.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    }
+
+    function getDayOfYear(date) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      const diff = date - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      return Math.floor(diff / oneDay);
+    }
+
+    function getDailyFallbackWord() {
+      const today = new Date();
+      const dayOfYear = getDayOfYear(today);
+      return fallbackWords[dayOfYear % fallbackWords.length];
+    }
+
+    function displayWord(data) {
+      currentWordData = data;
+      document.getElementById("word").textContent = data.word || "Unknown";
+      document.getElementById("phonetic").textContent = data.phonetic || "No pronunciation available";
+      document.getElementById("partOfSpeech").textContent = data.partOfSpeech || "Unknown";
+      document.getElementById("definition").textContent = data.definition || "No definition available";
+      document.getElementById("example").textContent = data.example || "No example available";
+    }
+
+    async function fetchWordDataByText(wordText) {
+      const normalized = wordText.trim().toLowerCase();
+      if (!normalized) {
+        setStatus("Please enter a word to search.", "error");
+        return;
+      }
+
+      setStatus(`Searching for "${normalized}"...`);
+
+      const fallback = fallbackWords.find(item => item.word.toLowerCase() === normalized) || {
+        word: normalized,
+        partOfSpeech: "Unknown",
+        definition: "No offline definition available.",
+        example: "No example available.",
+        phonetic: "",
+        audio: ""
+      };
+
+      const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(normalized)}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Word not found");
+        }
+
+        const result = await response.json();
+        const entry = result[0];
+
+        const phonetic =
+          entry.phonetic ||
+          (entry.phonetics && entry.phonetics.find(p => p.text)?.text) ||
+          fallback.phonetic ||
+          "No pronunciation available";
+
+        const audio =
+          (entry.phonetics && entry.phonetics.find(p => p.audio)?.audio) ||
+          fallback.audio ||
+          "";
+
+        const meanings = entry.meanings || [];
+        const meaningBlock = meanings[0] || {};
+        const definitionObj = (meaningBlock.definitions || [])[0] || {};
+
+        const data = {
+          word: entry.word || fallback.word,
+          phonetic,
+          audio,
+          partOfSpeech: meaningBlock.partOfSpeech || fallback.partOfSpeech,
+          definition: definitionObj.definition || fallback.definition,
+          example: definitionObj.example || fallback.example || "No example available"
+        };
+
+        displayWord(data);
+        setStatus(`Loaded "${data.word}" from dictionary API.`, "success");
+      } catch (error) {
+        displayWord(fallback);
+        setStatus(`Could not load API data. Showing fallback result for "${fallback.word}".`, "error");
+      }
+    }
+
+    function showTodayWord() {
+      const wordObj = getDailyFallbackWord();
+      fetchWordDataByText(wordObj.word);
+    }
+
+    function showRandomWord() {
+      const index = Math.floor(Math.random() * fallbackWords.length);
+      fetchWordDataByText(fallbackWords[index].word);
+    }
+
+    function playAudio() {
+      if (currentWordData && currentWordData.audio) {
+        const audio = new Audio(currentWordData.audio);
+        audio.play();
+      } else {
+        setStatus("No audio pronunciation available for this word.", "error");
+      }
+    }
+
+    function getFavorites() {
+      return JSON.parse(localStorage.getItem("favoriteWordsV3")) || [];
+    }
+
+    function saveFavorites(favorites) {
+      localStorage.setItem("favoriteWordsV3", JSON.stringify(favorites));
+    }
+
+    function saveFavorite() {
+      if (!currentWordData) {
+        setStatus("No word is loaded yet.", "error");
+        return;
+      }
+
+      const favorites = getFavorites();
+      const exists = favorites.some(
+        item => item.word.toLowerCase() === currentWordData.word.toLowerCase()
+      );
+
+      if (exists) {
+        setStatus(`"${currentWordData.word}" is already in favorites.`, "error");
+        return;
+      }
+
+      favorites.push(currentWordData);
+      saveFavorites(favorites);
+      renderFavorites();
+      setStatus(`Saved "${currentWordData.word}" to favorites.`, "success");
+    }
+
+    function removeFavorite(word) {
+      const favorites = getFavorites().filter(
+        item => item.word.toLowerCase() !== word.toLowerCase()
+      );
+      saveFavorites(favorites);
+      renderFavorites();
+      setStatus(`Removed "${word}" from favorites.`, "success");
+    }
+
+    function clearAllFavorites() {
+      saveFavorites([]);
+      renderFavorites();
+      setStatus("Cleared all favorites.", "success");
+    }
+
+    function renderFavorites() {
+      const favoriteList = document.getElementById("favoriteList");
+      const favorites = getFavorites();
+
+      favoriteList.innerHTML = "";
+
+      if (favorites.length === 0) {
+        favoriteList.innerHTML = `
+          <div class="favorite-card">
+            <div class="favorite-info">
+              <div class="favorite-word">No favorites yet</div>
+              <div class="favorite-type">Save a word to see it here</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      favorites.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "favorite-card";
+
+        const info = document.createElement("div");
+        info.className = "favorite-info";
+
+        const word = document.createElement("div");
+        word.className = "favorite-word";
+        word.textContent = item.word;
+
+        const type = document.createElement("div");
+        type.className = "favorite-type";
+        type.textContent = item.partOfSpeech || "Unknown";
+
+        info.appendChild(word);
+        info.appendChild(type);
+
+        const actions = document.createElement("div");
+        actions.className = "favorite-actions";
+
+        const loadBtn = document.createElement("button");
+        loadBtn.className = "secondary tiny-btn";
+        loadBtn.textContent = "Open";
+        loadBtn.addEventListener("click", () => fetchWordDataByText(item.word));
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "danger tiny-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.addEventListener("click", () => removeFavorite(item.word));
+
+        actions.appendChild(loadBtn);
+        actions.appendChild(removeBtn);
+
+        card.appendChild(info);
+        card.appendChild(actions);
+        favoriteList.appendChild(card);
+      });
+    }
+
+    async function copyDetails() {
+      if (!currentWordData) {
+        setStatus("No word loaded to copy.", "error");
+        return;
+      }
+
+      const text = `
+Word: ${currentWordData.word}
+Phonetic: ${currentWordData.phonetic || "N/A"}
+Part of Speech: ${currentWordData.partOfSpeech || "N/A"}
+Definition: ${currentWordData.definition || "N/A"}
+Example: ${currentWordData.example || "N/A"}
+      `.trim();
+
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus(`Copied details for "${currentWordData.word}".`, "success");
+      } catch (error) {
+        setStatus("Copy failed. Your browser may block clipboard access.", "error");
+      }
+    }
+
+    function loadTheme() {
+      const theme = localStorage.getItem("wordAppTheme");
+      if (theme === "dark") {
+        document.body.classList.add("dark");
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("wordAppTheme", isDark ? "dark" : "light");
+    }
+
+    function handleSearch() {
+      const value = document.getElementById("searchInput").value;
+      fetchWordDataByText(value);
+    }
+
+    function setupEvents() {
+      document.getElementById("themeToggle").addEventListener("click", toggleTheme);
+      document.getElementById("todayBtn").addEventListener("click", showTodayWord);
+      document.getElementById("randomBtn").addEventListener("click", showRandomWord);
+      document.getElementById("favoriteBtn").addEventListener("click", saveFavorite);
+      document.getElementById("audioBtn").addEventListener("click", playAudio);
+      document.getElementById("copyBtn").addEventListener("click", copyDetails);
+      document.getElementById("searchBtn").addEventListener("click", handleSearch);
+      document.getElementById("clearFavoritesBtn").addEventListener("click", clearAllFavorites);
+
+      document.getElementById("searchInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          handleSearch();
+        }
+      });
+    }
+
+    function init() {
+      document.getElementById("date").textContent = formatDate();
+      loadTheme();
+      setupEvents();
+      renderFavorites();
+      showTodayWord();
+    }
+
+    init();
+  </script>
+</body>
+</html>
